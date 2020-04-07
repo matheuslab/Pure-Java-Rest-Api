@@ -6,11 +6,13 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Application {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
-    private static PlayerData playerData;
+    private static Map<Long, Long> playerData = new HashMap<Long, Long>();
 
     public static void main(String[] args) throws IOException {
         int serverPort = 8000;
@@ -34,8 +36,13 @@ public class Application {
         //POST
         server.createContext("/post", (exchange -> {
             if ("POST".equals(exchange.getRequestMethod())) {
-                playerData = objectMapper.readValue(exchange.getRequestBody(), PlayerData.class);
-                System.out.println(playerData);
+                PlayerData player = objectMapper.readValue(exchange.getRequestBody(), PlayerData.class);
+                if(playerData.containsKey(player.getUserId())){
+                    playerData.replace(player.getUserId(), player.getPoints() + playerData.get(player.getUserId()));
+                } else {
+                    playerData.put(player.getUserId(), player.getPoints());
+                }
+
             } else {
                 exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
             }
