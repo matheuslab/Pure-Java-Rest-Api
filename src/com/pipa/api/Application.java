@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class Application {
 
@@ -25,13 +27,31 @@ public class Application {
 
         //GET Score of a user
         server.createContext("/", (exchange -> {
+            byte[] response;
             if ("GET".equals(exchange.getRequestMethod())) {
                 String params = exchange.getRequestURI().getPath();
                 String respText = String.format("Hello %s!", params);
-                exchange.sendResponseHeaders(200, respText.getBytes().length);
-                OutputStream output = exchange.getResponseBody();
-                output.write(respText.getBytes());
-                output.flush();
+                long userId = Long.parseLong(params.split("/")[1]);
+                List<Entry<Long, Long>> results = playerData.sortMap(playersScore);
+                scorePosition.clear();
+
+                if (!playersScore.containsKey(userId)) {
+                    scorePosition.add(new ScorePosition(userId, 0L, results.size()+1));
+                    playersScore.put(userId, 0L);
+                } else {
+                    results.forEach(res -> {
+                        if(res.getKey() == userId){
+                            scorePosition.add(new ScorePosition(userId, res.getValue(), results.indexOf(res)+1));
+                        }
+                    });
+                }
+                System.out.println(scorePosition);
+
+                response = objectMapper.writeValueAsBytes(scorePosition);
+                exchange.sendResponseHeaders(200, response.length);
+                OutputStream os = exchange.getResponseBody();
+                os.write(response);
+                os.close();
             } else {
                 exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
             }
