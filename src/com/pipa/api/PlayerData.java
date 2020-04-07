@@ -14,9 +14,9 @@ import lombok.Data;
 @Builder(builderClassName = "PlayerDataBuilder", toBuilder = true)
 public class PlayerData {
 
-  private final int userId;
+  private Long userId;
 
-  private final int points;
+  private Long points;
 
   @JsonPOJOBuilder(withPrefix = "")
   public static class PlayerDataBuilder {
