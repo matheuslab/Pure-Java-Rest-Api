@@ -30,11 +30,14 @@ public class ScoreRegisterHandler implements Handler {
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     if ("POST".equals(exchange.getRequestMethod())) {
-      PlayerData player = objectMapper.readValue(exchange.getRequestBody(), PlayerData.class);
 
-      createOrUpdateUserScore(player);
-
-      exchange.sendResponseHeaders(200, 0);
+      try {
+        PlayerData player = objectMapper.readValue(exchange.getRequestBody(), PlayerData.class);
+        createOrUpdateUserScore(player);
+        exchange.sendResponseHeaders(200, 0);
+      } catch (Exception e){
+        exchange.sendResponseHeaders(400, 0);
+      }
 
     } else {
       exchange.sendResponseHeaders(405, -1);
