@@ -1,7 +1,7 @@
 package com.pipa.api.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pipa.api.PlayerData;
+import com.pipa.api.player.PlayerData;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,16 +32,30 @@ public class ScoreRegisterHandler implements Handler {
     if ("POST".equals(exchange.getRequestMethod())) {
       PlayerData player = objectMapper.readValue(exchange.getRequestBody(), PlayerData.class);
 
-      if(playersScore.containsKey(player.getUserId())){
-        playersScore.replace(player.getUserId(), player.getPoints() + playersScore.get(player.getUserId()));
-      } else {
-        playersScore.put(player.getUserId(), player.getPoints());
-      }
+      createOrUpdateUserScore(player);
+
       exchange.sendResponseHeaders(200, 0);
+
     } else {
-      exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
+      exchange.sendResponseHeaders(405, -1);
     }
 
     exchange.close();
+  }
+
+  private void createOrUpdateUserScore(PlayerData player) {
+    if(playersScore.containsKey(player.getUserId())){
+      UpdateUserScore(player);
+    } else {
+      createANewUser(player);
+    }
+  }
+
+  private void UpdateUserScore(PlayerData player) {
+    playersScore.replace(player.getUserId(), player.getPoints() + playersScore.get(player.getUserId()));
+  }
+
+  private void createANewUser(PlayerData player) {
+    playersScore.put(player.getUserId(), player.getPoints());
   }
 }

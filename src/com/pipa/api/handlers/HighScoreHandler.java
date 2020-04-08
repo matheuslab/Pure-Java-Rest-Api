@@ -1,8 +1,8 @@
 package com.pipa.api.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pipa.api.PlayerData;
-import com.pipa.api.ScorePosition;
+import com.pipa.api.player.PlayerData;
+import com.pipa.api.player.ScorePosition;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
@@ -13,34 +13,41 @@ import java.util.Map;
 
 public class HighScoreHandler implements Handler {
 
-  private static ObjectMapper objectMapper = new ObjectMapper();
-
   private static PlayerData playerData = new PlayerData();
-
-  private static List<ScorePosition> scorePosition = new ArrayList<ScorePosition>();
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
-    byte[] response;
     if ("GET".equals(exchange.getRequestMethod())) {
       List<Map.Entry<Long, Long>> results = playerData.sortMap(ScoreRegisterHandler.getPlayersScore());
 
-      scorePosition.clear();
-
-      results.stream().limit(20).forEach(res -> {
-        scorePosition.add(new ScorePosition(res.getKey(), res.getValue(), results.indexOf(res)+1));
-      });
-
-      response = objectMapper.writeValueAsBytes(scorePosition);
-      exchange.sendResponseHeaders(200, response.length);
-      OutputStream os = exchange.getResponseBody();
-      os.write(response);
-      os.close();
+      returningHighScoreList(exchange, results);
 
     } else {
-      exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
+      exchange.sendResponseHeaders(405, -1);
     }
 
     exchange.close();
   }
+
+  private void returningHighScoreList(HttpExchange exchange, List<Map.Entry<Long, Long>> results) throws IOException {
+    byte[] response;
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    response = objectMapper.writeValueAsBytes(getHighScoreList(results));
+    exchange.sendResponseHeaders(200, response.length);
+    OutputStream os = exchange.getResponseBody();
+    os.write(response);
+    os.close();
+  }
+
+  private List<ScorePosition> getHighScoreList(List<Map.Entry<Long, Long>> results) {
+    List<ScorePosition> scorePosition = new ArrayList<ScorePosition>();
+
+    results.stream().limit(20).forEach(res -> {
+      scorePosition.add(new ScorePosition(res.getKey(), res.getValue(), results.indexOf(res)+1));
+    });
+
+    return scorePosition;
+  }
+
 }
