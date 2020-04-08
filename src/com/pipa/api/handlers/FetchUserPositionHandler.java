@@ -1,8 +1,8 @@
 package com.pipa.api.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pipa.api.player.PlayerData;
 import com.pipa.api.player.ScorePosition;
+import com.pipa.api.utils.Utils;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,13 +18,13 @@ import java.util.Map.Entry;
 @Builder
 public class FetchUserPositionHandler implements Handler {
 
-  private static PlayerData playerData = new PlayerData();
+  private static Utils utils = new Utils();
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
 
     if ("GET".equals(exchange.getRequestMethod())) {
-      List<Entry<Long, Long>> orderedResultsList = playerData.sortMap(ScoreRegisterHandler.getPlayersScore());
+      List<Entry<Long, Long>> orderedResultsList = utils.sortMap(ScoreRegisterHandler.getPlayersScore());
 
       returningUserScoreDetails(exchange, getUserIdFromPathParam(exchange), orderedResultsList);
 

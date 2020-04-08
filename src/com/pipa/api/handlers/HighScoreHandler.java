@@ -1,8 +1,8 @@
 package com.pipa.api.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pipa.api.player.PlayerData;
 import com.pipa.api.player.ScorePosition;
+import com.pipa.api.utils.Utils;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
@@ -13,12 +13,12 @@ import java.util.Map;
 
 public class HighScoreHandler implements Handler {
 
-  private static PlayerData playerData = new PlayerData();
+  private static Utils utils = new Utils();
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     if ("GET".equals(exchange.getRequestMethod())) {
-      List<Map.Entry<Long, Long>> results = playerData.sortMap(ScoreRegisterHandler.getPlayersScore());
+      List<Map.Entry<Long, Long>> results = utils.sortMap(ScoreRegisterHandler.getPlayersScore());
 
       returningHighScoreList(exchange, results);
 
