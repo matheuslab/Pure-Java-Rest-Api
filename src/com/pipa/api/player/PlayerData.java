@@ -1,4 +1,4 @@
-package com.pipa.api;
+package com.pipa.api.player;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;

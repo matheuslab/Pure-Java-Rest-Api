@@ -1,4 +1,4 @@
-package com.pipa.api;
+package com.pipa.api.player;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
