@@ -7,12 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 /*
   Jackson Builder method is different from lombok builder method, so we need
   to create a special builder on this class in order to fix this.
@@ -39,14 +33,6 @@ public class PlayerData{
   @JsonPOJOBuilder(withPrefix = "")
   public static class PlayerDataBuilder {
 
-  }
-
-  public List<Entry<Long, Long>> sortMap (Map<Long, Long> map){
-    return map
-        .entrySet()
-        .stream()
-        .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
-        .collect(Collectors.toList());
   }
 
 }
