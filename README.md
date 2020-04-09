@@ -3,7 +3,23 @@
 ### Prerequisites
 
 * [Java](https://www.java.com/) 11
-* [Maven](https://maven.apache.org/) (Optional)
+* [Maven](https://maven.apache.org/)
+
+### Build
+
+In order to build the project using Maven, on root folder:
+```
+mvn package
+```
+
+### Running
+
+To run, just type on root folder:
+```
+mvn exec:java
+```
+
+The application will run indefinitely until a manual stop. 
 
 ### Endpoints
 http://localhost:8000/post - This endpoint can be called several times per user and not return anything. 
